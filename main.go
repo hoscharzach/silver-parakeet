@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	// "github.com/gin-contrib/cors"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -81,9 +81,8 @@ func main() {
 	fmt.Println("test")
 
 	router := gin.Default()
-	// router.Use(CORSMiddleware())
-	// router.SetTrustedProxies([]string{"https://bideogames.vercel.app", "http://localhost:5173"})
-	// router.Use(CORSMiddleware())
+	router.Use(cors.Default())
+
 	router.GET("/", indexHandler)
 	router.GET("/answers", getAllAnswers)
 	router.GET("/random", getRandomAnswer)
