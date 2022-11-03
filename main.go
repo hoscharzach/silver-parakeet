@@ -12,26 +12,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CORSMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
+// func CORSMiddleware() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
 
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Headers", "*")
-		/*
-		   c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		   c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		   c.Writer.Header().Set("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
-		   c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, OPTIONS, PATCH")
-		*/
+// 		c.Header("Access-Control-Allow-Origin", "*")
+// 		c.Header("Access-Control-Allow-Headers", "*")
+// 		/*
+// 		   c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+// 		   c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+// 		   c.Writer.Header().Set("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+// 		   c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, OPTIONS, PATCH")
+// 		*/
 
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
+// 		if c.Request.Method == "OPTIONS" {
+// 			c.AbortWithStatus(204)
+// 			return
+// 		}
 
-		c.Next()
-	}
-}
+// 		c.Next()
+// 	}
+// }
 
 var responses = []response{
 	{ID: 1, Response: "It is certain."},
@@ -86,8 +86,8 @@ func main() {
 	fmt.Println("test")
 
 	router := gin.Default()
-
-	router.Use(CORSMiddleware())
+	router.SetTrustedProxies([]string{"https://golang-test.onrender.com/"})
+	// router.Use(CORSMiddleware())
 	router.GET("/", indexHandler)
 	router.GET("/answers", getAllAnswers)
 	router.GET("/random", getRandomAnswer)
