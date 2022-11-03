@@ -78,11 +78,11 @@ func indexHandler(c *gin.Context) {
 }
 
 func main() {
-	fmt.Println("")
+	fmt.Println("test")
 
 	router := gin.Default()
 	// router.Use(CORSMiddleware())
-	router.SetTrustedProxies([]string{"https://bideogames.vercel.app", "http://localhost:5173"})
+	// router.SetTrustedProxies([]string{"https://bideogames.vercel.app", "http://localhost:5173"})
 	// router.Use(CORSMiddleware())
 	router.GET("/", indexHandler)
 	router.GET("/answers", getAllAnswers)
