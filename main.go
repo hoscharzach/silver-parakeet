@@ -66,10 +66,7 @@ func main() {
 
 	router := gin.Default()
 
-	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
-
-	router.Use(cors.New((config)))
+	router.Use(cors.Default())
 	router.GET("/", indexHandler)
 	router.GET("/answers", getAllAnswers)
 	router.GET("/random", getRandomAnswer)
