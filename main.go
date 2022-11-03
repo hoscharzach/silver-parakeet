@@ -86,7 +86,7 @@ func main() {
 	fmt.Println("test")
 
 	router := gin.Default()
-	router.SetTrustedProxies([]string{"https://golang-test.onrender.com/"})
+	router.SetTrustedProxies([]string{"https://bideogames.vercel.app", "http://localhost:5173"})
 	// router.Use(CORSMiddleware())
 	router.GET("/", indexHandler)
 	router.GET("/answers", getAllAnswers)
