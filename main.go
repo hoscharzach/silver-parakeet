@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -64,6 +65,11 @@ func main() {
 	fmt.Println("test")
 
 	router := gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+
+	router.Use(cors.New((config)))
 	router.GET("/", indexHandler)
 	router.GET("/answers", getAllAnswers)
 	router.GET("/random", getRandomAnswer)
