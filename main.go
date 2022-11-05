@@ -10,23 +10,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
-
-// func CORSMiddleware() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-// 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-// 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-// 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
-
-// 		if c.Request.Method == "OPTIONS" {
-// 			c.AbortWithStatus(204)
-// 			return
-// 		}
-
-// 		c.Next()
-// 	}
-// }
 
 var responses = []response{
 	{ID: 1, Response: "It is certain."},
@@ -51,11 +36,33 @@ var responses = []response{
 	{ID: 20, Response: "Very doubtful."},
 }
 
+var wsupgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func wshandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := wsupgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Failed to set websocket upgrade: $+v", err)
+		return
+	}
+
+	for {
+		t, msg, err := conn.ReadMessage()
+		if err != nil {
+			break
+		}
+		conn.WriteMessage(t, msg)
+	}
+
+}
+
 type indexResponse struct {
 	Message string `json:"message"`
 }
 
-var message = &indexResponse{
+var helloMessage = &indexResponse{
 	Message: "Hello world",
 }
 
@@ -74,22 +81,36 @@ func getRandomAnswer(c *gin.Context) {
 }
 
 func indexHandler(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, message)
+	c.IndentedJSON(http.StatusOK, helloMessage)
 }
 
 func main() {
 	fmt.Println("test")
+	go h.run()
 
 	router := gin.Default()
 	router.Use(cors.Default())
+	router.LoadHTMLFiles("index.html")
+
+	router.GET("/room/:roomId", func(c *gin.Context) {
+		c.HTML(200, "index.html", nil)
+	})
+
+	router.GET("/ws/:roomId", func(c *gin.Context) {
+		roomId := c.Param("roomId")
+		serveWs(c.Writer, c.Request, roomId)
+	})
 
 	router.GET("/", indexHandler)
 	router.GET("/answers", getAllAnswers)
 	router.GET("/random", getRandomAnswer)
+	router.GET("/ws", func(c *gin.Context) {
+		wshandler(c.Writer, c.Request)
+	})
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "80"
+		port = "5000"
 	}
 	if err := router.Run(":" + port); err != nil {
 		log.Panicf("error: %s", err)
