@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 const (
@@ -95,6 +94,7 @@ func (s *subscription) writePump() {
 // serveWs handles websocket requests from the peer.
 func serveWs(w http.ResponseWriter, r *http.Request, roomId string) {
 	fmt.Print(roomId)
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err.Error())
